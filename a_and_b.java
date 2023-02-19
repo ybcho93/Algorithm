@@ -1,3 +1,5 @@
+// 실행하려면 클래스명, 파일명 동일하게 맞추기
+
 import java.util.Scanner;
 
 public class Main {
