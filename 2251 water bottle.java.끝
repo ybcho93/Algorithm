@@ -1,0 +1,275 @@
+import java.io.*;
+import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Collections;
+
+public class Main {
+    static int[] volume;
+    static int[] water;
+    static boolean[][] visit = new boolean[201][201];
+    static ArrayList<Integer> answer = new ArrayList<Integer>();
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static Queue<pair> queue = new LinkedList<>();
+
+    static public class pair {
+        public int a, b;
+
+        public pair(int a, int b) {
+            super();
+            this.a = a;
+            this.b = b;
+        }
+    }
+
+    // source번째에서 target번째로 물을 붓는 함수
+    public static void pour (int source, int target) {
+        if(water[source] == 0 || water[target] == volume[target]) return;
+        
+        // source의 물이 target의 남은 공간보다 많을 때
+        if(water[source] > volume[target]-water[target]) {
+            water[source] = water[source] - (volume[target]-water[target]);
+            water[target] = volume[target];
+        }
+        // source의 물을 target 물병에 전부 넣을 수 있을 때
+        else if (water[source] <= volume[target] - water[target]) {
+            water[target] += water[source];            
+            water[source] =0;
+        }
+    } 
+
+    public static void bfs() throws IOException {        
+        while(!queue.isEmpty()) {
+            int[] waterBackup = new int[3];
+            pair now = queue.poll();
+            
+            // 현재 상태를 진행한 적 없으면 이상태에서 물 쫙 부어보고 큐에 다음 후보 넣어주기
+            if(visit[now.a][now.b] == false) {
+                visit[now.a][now.b] = true;
+                water[0] = now.a;
+                water[1] = now.b;
+                water[2] = volume[2] - now.a - now.b;
+                //bw.write("visit "+ now.a+" "+ now.b+" "+ water[2]+"\n");
+
+                if(water[0] == 0 && !answer.contains(water[2]) ) {
+                    answer.add(water[2]);
+                    //bw.write("answer: "+ water[2]+"\n");
+                }
+
+                for (int i=0; i<3; i++) {
+                    waterBackup[i] = water[i];
+                }
+                for (int i=0; i<3; i++) {
+                    for (int j=0; j<3 ; j++) {
+                        if(i!=j) {
+                            for (int k=0; k<3; k++) {
+                                water[k] = waterBackup[k];
+                            }
+                            //bw.write("pour "+i+" "+  water[i]+" -> "+j+" "+  water[j]+"\n");
+                            pour(i, j);
+                            
+
+                            if(!visit[water[0]][ water[1]]) {
+                                queue.add(new pair(water[0], water[1]));
+                                //bw.write("add "+ water[0]+" "+ water[1]+"\n");
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        volume = new int[3];
+        water = new int[3] ;
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        volume[0] = Integer.parseInt(st.nextToken());
+        volume[1] = Integer.parseInt(st.nextToken());
+        volume[2] = Integer.parseInt(st.nextToken());
+        water[0] = 0;
+        water[1] = 0;
+        water[2] = volume[2];
+
+        for(int i=0; i<201; i++) {
+            for (int j=0; j<201; j++) {
+                visit[i][j] = false;
+            }
+        }
+
+        queue.add(new pair(0, 0));
+        bfs();
+
+        Collections.sort(answer);
+
+        for (int i=0; i<answer.size(); i++) {
+            bw.write(Integer.toString(answer.get(i)));
+            if(i != answer.size()-1) {
+                bw.write(" ");
+            }
+        }
+
+        bw.write("\n");
+        bw.flush();
+        bw.close();
+       return ;
+    }
+
+    
+}
+
+/* 풀이 2: dfs로 풀었더니 재귀함수 때문에 메모리 부족
+
+import java.io.*;
+import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class Main {
+    static int[] volume;
+    static int[] water;
+    static ArrayList<Integer> answer = new ArrayList<Integer>();
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+    // source번째에서 target번째로 물을 붓는 함수
+    public static void pour (int source, int target, int[] water) {
+        if(water[source] == 0 || water[target] == volume[target]) return;
+        
+        // source의 물이 target의 남은 공간보다 많을 때
+        if(water[source] > volume[target]-water[target]) {
+            water[source] = water[source] - (volume[target]-water[target]);
+            water[target] = volume[target];
+        }
+        // source의 물을 target 물병에 전부 넣을 수 있을 때
+        else if (water[source] <= volume[target] - water[target]) {
+            water[target] += water[source];            
+            water[source] =0;
+        }
+    } 
+
+
+    public static void dfs (int depth) {
+        int[] waterBackup = new int[3];
+        // 첫 번째 물병에 물 없으면 답이 될수도 있으니까 넣기
+        if(water[0] == 0 && !answer.contains(water[2])) {
+            answer.add(water[2]);
+        }
+
+        // 5번까지만 옮기면 모든 경우 다 되지 않을까?
+        if(depth >= 10) {
+            return;
+        }
+
+        for (int i=0; i<3; i++) {
+            waterBackup[i] = water[i];
+        }
+
+        for(int i=0; i<3; i++) {
+            for (int j=0; j<3; j++){                
+                if(j!=i) {
+                    for (int k =0; k<3; k++) {
+                        water[k] = waterBackup[k];
+                    } 
+                    pour(i, j, water);
+                    dfs(depth+1);
+                }
+            }
+        }     
+    } 
+
+    public static void main(String[] args) throws IOException {
+        volume = new int[3];
+        water = new int[3] ;
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        volume[0] = Integer.parseInt(st.nextToken());
+        volume[1] = Integer.parseInt(st.nextToken());
+        volume[2] = Integer.parseInt(st.nextToken());
+        water[0] = 0;
+        water[1] = 0;
+        water[2] = volume[2];
+
+        
+        dfs(1);
+
+        Collections.sort(answer);
+
+        for (int i=0; i<answer.size(); i++) {
+            bw.write(Integer.toString(answer.get(i)));
+            if(i != answer.size()-1) {
+                bw.write(" ");
+            }
+        }
+
+        bw.write("\n");
+        bw.flush();
+        bw.close();
+       return ;
+    }
+}
+ */
+/* 풀이 1: a,b,c의 모든 차이를 다 만들수있을거라고 생각했는데 아니었음
+import java.io.*;
+import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.HashSet;
+
+public class Main {
+    
+    public static void main(String[] args) throws IOException {
+        int a,b,c;
+        ArrayList<Integer> answer = new ArrayList<Integer>();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        a = Integer.parseInt(st.nextToken());
+        b = Integer.parseInt(st.nextToken());
+        c = Integer.parseInt(st.nextToken());
+
+        answer.add(a);
+        answer.add(b);
+        answer.add(c);
+
+        answer.add(a-b);
+        answer.add(b-a);
+        answer.add(c-b);
+        answer.add(b-c);
+        answer.add(a-c);
+        answer.add(c-a);
+
+        Iterator<Integer> it = answer.iterator();
+        while (it.hasNext()) {
+            int n = (Integer) it.next();
+ 
+            if (n < 0) {
+                it.remove();
+            }
+        }
+
+        // HashSet으로 변환해서 중복 제거하기
+        HashSet<Integer> hs = new HashSet<Integer>(answer);
+        // 기존 ArrayList 클리어
+        answer.clear();
+        // 중복 요소가 제거된 HashSet을 answer에 추가
+        answer.addAll(hs);
+
+        for (int i=0; i<answer.size(); i++) {
+            bw.write(Integer.toString(answer.get(i)));
+            if(i != answer.size()-1) {
+                bw.write(" ");
+            }
+        }
+        bw.write("\n");
+        bw.flush();
+        bw.close();
+       return ;
+    }
+}
+ */

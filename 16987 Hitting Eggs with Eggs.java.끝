@@ -1,4 +1,293 @@
 import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static int[] durability;
+    static int[] durabilityBackup;
+    static int[] weight;
+    static int eggCount = 0;
+    static int result = 0;
+    static int brokenCount = 0;
+
+    // index번째 계란을 집어서 계란을 치는 함수
+    public static void hit(int index, int brokenCount, int[] durabilityNow) throws IOException {
+        int[] durabilityTemp = new int[eggCount];
+        int brokenCountTemp;
+
+        if (index >= eggCount){
+            if (result < brokenCount) {
+                result= brokenCount;
+            }
+            return;
+        }
+            
+        if (durabilityNow[index] <= 0 || brokenCount >= eggCount-1 ) {
+            hit((index+1), brokenCount, durabilityNow);
+            return;
+        }
+
+        // 쳐 보고 다음거 칠 때 원래대로 돌려놔야되니까 백업 해둠
+        brokenCountTemp = brokenCount;
+        for(int i=0; i<eggCount; i++) {
+            durabilityTemp[i] = durabilityNow[i];
+        }
+
+        // target이 이미 부서진 계란이거나 손에든 계란 자신이 타겟인 경우 치지 않고, 조건이 맞으면 침
+        for (int target=0; target< eggCount; target++){
+            if (durabilityNow[target] > 0  && index != target) {
+                durabilityNow[index] = durabilityNow[index] - weight[target];
+                durabilityNow[target] = durabilityNow[target] - weight[index];
+                //bw.write("hit!! " + index + " " + target + "\n");
+                //bw.flush();
+                if (durabilityNow[index] <= 0) {
+                //    bw.write(index + " broken by " + target + "\n");
+                    brokenCount++;
+                //    bw.write(brokenCount+ "\n");
+                //    bw.flush();
+                }
+                if (durabilityNow[target] <= 0) {
+                //    bw.write(target + " broken by " + index + "\n");
+                    brokenCount++;
+                //    bw.write(brokenCount+ "\n");
+                //    bw.flush();
+                }
+                hit (index+1, brokenCount, durability);
+            }
+            
+
+            brokenCount = brokenCountTemp;
+            for(int i=0; i<eggCount; i++) {
+                durabilityNow[i] = durabilityTemp[i];
+            }
+        }
+        
+
+        
+      
+
+        return;
+    }
+
+    public static void main(String[] args) throws IOException {
+        eggCount = Integer.parseInt(br.readLine());
+        durability = new int[eggCount];
+        durabilityBackup = new int[eggCount];
+        weight = new int[eggCount];
+
+        for (int i = 0; i < eggCount; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            durabilityBackup[i] = Integer.parseInt(st.nextToken());
+            weight[i] = Integer.parseInt(st.nextToken());
+        }
+
+        for (int i = 0; i < eggCount; i++) {
+            for(int j=0; j< eggCount; j++) {
+                durability[j] = durabilityBackup[j];
+            }
+            //bw.write("hit " + (0) + " " + (i) + " --- \n");
+            //bw.flush();
+            hit(0, 0, durability);
+        }
+
+        bw.write(result + "\n");
+        bw.flush();
+        bw.close();
+        return;
+    }
+}
+
+
+/* 풀이 2: 내 드러운 코드. 타겟의 번호를 매개변수로 넘기려고 했는데 굳이 그럴 필요 없었다. 
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static int[] durability;
+    static int[] durabilityBackup;
+    static int[] weight;
+    static int eggCount = 0;
+    static int result = 0;
+    static int currentBroken = 0;
+
+    // index번째 계란을 집어서 target번째 계란을 치는 함수
+    public static void hit(int index, int target, int[] durabilityNow, boolean[] broken) throws IOException {
+        int[] durabilityTemp = new int[eggCount];
+        boolean[] brokenTemp = new boolean[eggCount];
+        int brokenCount = 0;
+
+        if (index == eggCount)
+            return;
+
+        // index 또는 target이 이미 부서진 계란이거나 손에든 계란 자신이 타겟인 경우 치지 않고, 조건이 맞으면 침
+        if (durabilityNow[target] > 0 && durabilityNow[index] > 0 && index != target) {
+            durabilityNow[index] = durabilityNow[index] - weight[target];
+            durabilityNow[target] = durabilityNow[target] - weight[index];
+            bw.write("hit!! " + index + " " + target + "\n");
+            bw.flush();
+            if (durabilityNow[index] <= 0) {
+            //    bw.write(index + " broken by " + target + "\n");
+            //    bw.flush();
+                broken[index] = true;
+            }
+            if (durabilityNow[target] <= 0) {
+            //    bw.write(target + " broken by " + index + "\n");
+            //    bw.flush();
+                broken[target] = true;
+            }
+        }
+        for (int i = 0; i < eggCount; i++) {
+            durabilityTemp[i] = durabilityNow[i];
+            brokenTemp[i] = broken[i];
+        }
+
+        // 부딪 힌 후 깨진 것 개수 정산
+        for (int j = 0; j < eggCount; j++) {
+            if (brokenTemp[j] == true)
+                brokenCount++;
+        }
+        if (result < brokenCount) {
+            result = brokenCount;
+            if(result > 4) {
+                bw.write ("here\n");
+            }
+        }
+         for (int j = 0; j < eggCount; j++) {
+              bw.write(durabilityNow[j] + " ");
+         }
+        bw.write("\nbrokenCount: " + brokenCount + "\n");
+        bw.flush();
+
+        // 정산 후 다음 index로 또 다 한번씩 쳐보러 감
+        for (int i = 0; i < eggCount; i++) {
+            // bw.write("hit " + (index+1) + " "+ (i)+"\n");
+            // bw.flush();
+            // 다음 계란 깨져있으면 그 다음계란, 다음 계란 없으면 그냥 끝
+            if(index+1>=eggCount) return;
+            while(durabilityTemp[index+1] <= 0) {
+                index++;
+                if(index+1>=eggCount) return;
+            }            
+            if (durabilityTemp[i] > 0 && durabilityTemp[index + 1] > 0 && index + 1 != i) {
+                // 현재까지의 결과를 다시 돌려놓은 상태로 다음번 index의 계란을 집어서 침
+                for (int j = 0; j < eggCount; j++) {
+                    durabilityTemp[j] = durabilityNow[j];
+                    brokenTemp[j] = broken[j];
+                }
+                hit(index + 1, i, durabilityTemp, brokenTemp);
+            }
+        }
+
+        return;
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        boolean[] broken;
+
+        eggCount = Integer.parseInt(br.readLine());
+        durability = new int[eggCount];
+        durabilityBackup = new int[eggCount];
+        weight = new int[eggCount];
+        broken = new boolean[eggCount];
+
+        for (int i = 0; i < eggCount; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            durabilityBackup[i] = Integer.parseInt(st.nextToken());
+            weight[i] = Integer.parseInt(st.nextToken());
+        }
+
+        for (int i = 0; i < eggCount; i++) {
+            currentBroken = 0;
+            for (int j = 0; j < eggCount; j++) {
+                durability[j] = durabilityBackup[j];
+            }
+            for (int j = 0; j < eggCount; j++) {
+                broken[j] = false;
+            }
+            bw.write("hit " + (0) + " " + (i) + " --- \n");
+            bw.flush();
+            hit(0, i, durability, broken);
+        }
+
+        bw.write(result + "\n");
+        bw.flush();
+        bw.close();
+        return;
+    }
+}
+*/
+
+/* 
+import java.io.*;
+import java.util.ArrayList;
+
+public class Main {
+    static public class Egg {
+        int durability;
+        int weight;
+    
+        public Egg(int durability, int weight) {
+            super();
+            this.durability = durability;
+            this.weight = weight;
+        }
+        public boolean isBroken() {
+            if(durability<=0) return true;
+            else return false;
+        }
+        public int getDurability() {
+            return durability;
+        }
+        public int getWeight(){
+            return weight;
+        }
+        public void setDurability(int durability) {
+            this.durability = durability;
+        }
+        public void hit(Egg a) {
+            this.durability = this.durability - a.weight;
+            a.durability = a.durability-this.weight;
+        }
+    }
+
+   
+    public static void main(String[] args) throws IOException{
+        int eggCount =0;
+        static int result;
+        static int n;
+        ArrayList<Egg> eggArray = new ArrayList<>();
+        ArrayList<Integer> currentCountList = new ArrayList<>();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        
+        eggCount = Integer.parseInt(br.readLine());
+
+        for (int i=0; i<eggCount; i++) {
+            String [] input = br.readLine().split(" ");
+                   
+            int d = Integer.parseInt(input[0]);
+            int w = Integer.parseInt(input[1]);
+
+            eggArray.add(new Egg(d, w));
+        }
+    
+        bw.write(result+"\n");
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+    
+}
+*/
+/* 이거 식으로 풀수 있지가 않다.
+import java.io.*;
 import java.util.ArrayList;
 
 public class Main {
@@ -126,6 +415,7 @@ public class Main {
     }
     
 }
+*/
 
 // 제일 가벼운거부터 때리면 안좋은듯. 내가 깰수있는것 중 가장 튼튼한거 깨야할 듯
 
