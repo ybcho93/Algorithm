@@ -1,0 +1,68 @@
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        long monkey, dog;
+        long gap, sum = 0;
+        long day = 1;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        String[] input = br.readLine().split(" ");
+
+        monkey = Integer.parseInt(input[0]);
+        dog = Integer.parseInt(input[1]);
+
+        gap = dog - monkey;
+
+        while (gap > sum) {
+            sum += ((day + 1) / 2);
+            day++;
+            // System.out.println(sum);
+        }
+
+        bw.write(--day + "\n");
+
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+}
+
+
+/* 시간 초과 
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        int monkey, dog;
+        int gap, sum = 0;
+        int day = 1;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        String[] input = br.readLine().split(" ");
+
+        monkey = Integer.parseInt(input[0]);
+        dog = Integer.parseInt(input[1]);
+
+        gap = dog - monkey;
+
+        while (gap > sum) {
+            sum = sum + ((day + 1) / 2);
+            day++;
+            // System.out.println(sum);
+        }
+
+        bw.write(--day + "\n");
+
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+}
+*/

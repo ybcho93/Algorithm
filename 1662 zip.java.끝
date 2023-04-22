@@ -1,0 +1,73 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Stack;
+
+public class Main {
+    public static void main (String[] args) throws NumberFormatException, IOException {
+        String string;
+        int stringLength=0;
+        Stack<String> stack = new Stack<>();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        string = br.readLine();
+        
+        for (int i=0; i<string.length(); i++) {
+            // 괄호 닫을때까지 스택에 넣음
+            if(string.charAt(i)!=')') {
+                stack.push(Character.toString(string.charAt(i)));
+            // 닫는 괄호를 만났을 때
+            } else {
+                //괄호 여는 곳 까지 찾아가면서 자릿수 더함
+                stringLength = 0;
+                while(stack.peek().equals("(") == false) {
+                    //System.out.println("peek: "+stack.peek());
+                    if(stack.peek().equals("+") == true) {
+                        stack.pop();
+                        stringLength += Integer.parseInt(stack.peek());
+                    } else {
+                        stringLength++;
+                    }
+                    //System.out.println("stringLength++: "+stringLength);
+                    stack.pop();
+                    
+                    
+                    if(stack.empty()) {       
+                        break;
+                    }
+                }
+
+                // 괄호 여는 곳 도착하면 여는 괄호 빼고 앞에 숫자랑 곱해서 다시 넣고 "+"기호로 표시해두기
+                if(!stack.empty()) {
+                    if(stack.peek().equals("(") == true){
+                        stack.pop();
+                        stringLength = (Integer.parseInt(stack.peek())*stringLength);
+                        stack.pop();
+                        stack.push(Integer.toString(stringLength));
+                        stack.push("+");
+                    }
+                }
+            }
+            //System.out.println("stringLength: "+stringLength);
+
+        }
+        stringLength=0;
+        while(!stack.empty()) {
+            if(stack.peek().equals("+") == true) {
+                stack.pop();
+                stringLength += Integer.parseInt(stack.peek());
+            } else {
+                stringLength++;
+            }
+            stack.pop();
+        }
+        System.out.println(stringLength);
+
+        bw.close();
+        return;
+    }
+    
+}
