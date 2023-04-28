@@ -1,0 +1,153 @@
+import java.io.*;
+
+public class Main {
+    
+    public static void main(String[] args) throws IOException {
+        String a, b;
+        int [][] array;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        a = br.readLine();
+        b = br.readLine();
+
+        array = new int[a.length()+1][b.length()+1];
+
+        // 배열 초기화
+        for (int i=0; i<=a.length(); i++) {
+            for (int j=0; j<=b.length(); j++) {
+                array[i][j] = 0;
+            }
+        }
+
+        // array 범위는 1~a.length()까지, 실제 문자열 index는 0~a.length()-1까지
+        for (int i=1; i<=a.length(); i++) {
+            for (int j=1; j<=b.length(); j++) {
+                if(a.charAt(i-1) == b.charAt(j-1)) {
+                    array[i][j] = array[i-1][j-1]+1;
+                }
+                else {
+                    array[i][j] = (array[i-1][j] > array[i][j-1])? array[i-1][j] : array[i][j-1];
+                }
+            }
+        }
+    
+        // for (int i=0; i<=a.length(); i++) {
+        //     for (int j=0; j<=b.length(); j++) {
+        //         bw.write(array[i][j]+" ");
+        //     }
+        //     bw.write("\n");
+        // }
+
+        bw.write(Integer.toString(array[a.length()][b.length()]));
+        bw.flush();;
+        bw.close();;
+        return;
+    }
+}
+
+/* 풀이 2: 재귀함수로 풀었는데 시간초과. 이렇게 풀기엔 문자열이 너무 긴가보다.
+import java.io.*;
+
+public class Main {
+    static String a, b;
+    static int result=0;
+    static int [][] array = new int [2000][2000];
+
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+    public static void findLongestPath (int aIndex, int bIndex, int nowLength) throws IOException {
+        //  어차피 1일 때만 함수가 호출되니까 필요 없는것같다 
+        // if(aIndex >= a.length() ) { // v가 근데 length보다 길어질수가 있나? 없을듯? 고쳐야될듯?
+        //     if( result < nowLength) {
+        //         result = nowLength;
+        //         return;
+        //     }
+        // }
+        
+        for(int i=aIndex+1; i<a.length(); i++){
+            for(int j=bIndex+1; j<b.length(); j++) {
+                if(array[i][j]==1) {
+                    if( result < nowLength+1) {
+                        result = nowLength+1;
+                    }
+                   // bw.write("findLongestPath "+i+" "+j+" "+(nowLength+1)+"\n");
+                    findLongestPath(i, j, nowLength+1);
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        
+
+        
+
+        a = br.readLine();
+        b = br.readLine();
+
+        for(int i=0; i<a.length(); i++) {
+            for(int j=0; j < b.length(); j++) {
+                if(a.charAt(i) == b.charAt(j)) {
+                    array[i][j] = 1;
+                }
+            }
+        }
+
+        findLongestPath(-1, -1, 0);
+
+        bw.write(Integer.toString(result));
+        bw.flush();
+        bw.close();
+    }
+}
+ */
+/* 풀이 1: 앞에서부터 차례로 비교. 더 앞쪽에 나온 문자를 포함시키려다 뒤의 문자를 잃게되는 경우 생김
+import java.io.*;
+
+public class Main {
+    
+    public static void main(String[] args) throws IOException {
+        String a, b;
+        int indexNow=0, aMax=0, bMax=0;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        a = br.readLine();
+        b = br.readLine();
+
+        // a먼저 앞에서부터 쭉 보면서 공통된 것 개수 찾기
+        for(int i=0; i<a.length(); i++) {
+            for(int j=indexNow; j < b.length(); j++) { // indexNow+1
+                if(j >= b.length()) break;
+                if(a.charAt(i) == b.charAt(j)) {
+                    bw.write(Integer.toString(aMax)+ " " +Integer.toString(j)+"\n");
+                    aMax++;
+                    indexNow = j+1;
+                    break;
+                }
+            }
+        }
+        indexNow=0;
+        for(int i=0; i<b.length(); i++) {
+            for(int j=indexNow; j < a.length(); j++) { // indexNow+1
+                if(j >= a.length()) break;
+                if(b.charAt(i) == a.charAt(j)) {
+                    bw.write(Integer.toString(bMax)+ " " +Integer.toString(j)+"\n");
+                    bMax++;
+                    indexNow = j+1;
+                    break;
+                }
+            }
+        }
+
+        bw.write(Integer.toString(aMax>bMax?aMax:bMax));
+        bw.flush();
+        bw.close();
+        return;
+    }
+}
+ */
