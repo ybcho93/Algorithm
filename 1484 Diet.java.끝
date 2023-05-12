@@ -1,0 +1,39 @@
+import java.io.*;
+import java.lang.Math;
+import java.util.ArrayList;
+
+public class Main {
+    public static void main (String[] args) throws NumberFormatException, IOException {
+        int g, now=1, previous=1;
+        ArrayList<Integer> result = new ArrayList<Integer>();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        g = Integer.parseInt(br.readLine());
+
+        while(Math.pow(now,2)-Math.pow(now-1, 2)<=g) { // 현재의 몸무게의 제곱에서 현재보다 1작은 몸무게의 제곱을 뺐을 때 g보다 크면 이제 더 볼 필요 X 
+            while (now > previous) {
+                if(Math.pow(now, 2) - Math.pow(previous, 2) == g) {
+                    result.add(now);
+                }
+                previous++;
+            }
+            now++;
+            previous = 1;
+        }
+
+        if(result.isEmpty()) {
+            bw.write("-1");
+        }
+        else {
+            for(int i =0; i<result.size(); i++) {
+                bw.write(result.get(i)+"\n");
+            }
+        }
+
+        bw.flush();
+        bw.close();
+        return ;
+    }
+}
