@@ -1,0 +1,293 @@
+import java.io.*;
+import java.security.spec.ECGenParameterSpec;
+import java.util.StringTokenizer;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+
+// 인접리스트에서 다음 노드와 그 노드와의 유사도를 표현할 클래스
+class Edge  {
+        public int node;
+        public int usado;
+    
+        public Edge(int node, int usado) {
+            super();
+            this.node = node;
+            this.usado = usado;
+        }
+    
+}
+
+public class Main {
+   
+
+    public static void main(String[] args) throws IOException {
+        int N, Q;
+        Queue<Integer> queue = new LinkedList<>();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        BufferedWriter bwT = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        N = Integer.parseInt(st.nextToken());
+        Q = Integer.parseInt(st.nextToken());
+        LinkedList<Edge>[] adjList = new LinkedList[N+1];
+        
+        int usadoFrom[] = new int [N+1];
+
+        for(int i=0; i<=N; i++) {
+            adjList[i] = new LinkedList<Edge>(); 
+            usadoFrom[i] = 0;
+        }
+
+        for(int i=0; i<N-1; i++) {
+            int from =0;
+            int to =0;
+            int usado =0;
+
+            st = new StringTokenizer(br.readLine(), " ");
+            from = Integer.parseInt(st.nextToken());
+            to = Integer.parseInt(st.nextToken());
+            usado = Integer.parseInt(st.nextToken());
+
+            // 양쪽으로 간선 만들어줌
+            adjList[from].add(new Edge(to, usado));
+            adjList[to].add(new Edge(from, usado));
+        }
+
+        for (int i=0; i<Q; i++) {
+            // vi영상과 ki 이상의 유사도를 갖는걸 answer로 찾음
+            int ki=0;
+            int vi=0;
+            int answer=0;
+            Boolean visit[] = new Boolean[N+1];
+            for(int k=0; k<=N; k++) visit[k] = false;
+
+            st = new StringTokenizer(br.readLine(), " ");
+            ki = Integer.parseInt(st.nextToken());
+            vi = Integer.parseInt(st.nextToken());
+
+            visit[vi] = true;
+            queue.offer(vi);
+
+            while (!queue.isEmpty()) {
+                int now = queue.poll();
+
+                for(Edge nextEdge: adjList[now]) {
+                    if(!visit[nextEdge.node] && nextEdge.usado >= ki) {
+                        queue.add(nextEdge.node);
+                        visit[nextEdge.node]=true;
+                        answer++;
+                    }
+                }
+            }
+            bw.write(answer+"\n");
+        }
+        bw.flush();
+        bw.close();
+    }
+}
+
+
+/* 큐에 Edge 단위로 넣고 했더니 자꾸 이상하게 꼬이고 node 단위로 검색해야될듯...
+import java.io.*;
+import java.security.spec.ECGenParameterSpec;
+import java.util.StringTokenizer;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+
+// 인접리스트에서 다음 노드와 그 노드와의 유사도를 표현할 클래스
+class Edge  {
+        public int node;
+        public int usado;
+    
+        public Edge(int node, int usado) {
+            super();
+            this.node = node;
+            this.usado = usado;
+        }
+    
+}
+
+public class Main {
+   
+
+    public static void main(String[] args) throws IOException {
+        int N, Q;
+        Queue<Edge> queue = new LinkedList<>();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        BufferedWriter bwT = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        N = Integer.parseInt(st.nextToken());
+        Q = Integer.parseInt(st.nextToken());
+        LinkedList<Edge>[] adjList = new LinkedList[N+1];
+        
+        int usadoFrom[] = new int [N+1];
+
+        for(int i=0; i<=N; i++) {
+            adjList[i] = new LinkedList<Edge>(); 
+            usadoFrom[i] = 0;
+        }
+
+        for(int i=0; i<N-1; i++) {
+            int from =0;
+            int to =0;
+            int usado =0;
+
+            st = new StringTokenizer(br.readLine(), " ");
+            from = Integer.parseInt(st.nextToken());
+            to = Integer.parseInt(st.nextToken());
+            usado = Integer.parseInt(st.nextToken());
+
+            // 양쪽으로 간선 만들어줌
+            adjList[from].add(new Edge(to, usado));
+            adjList[to].add(new Edge(from, usado));
+        }
+
+        for (int i=0; i<Q; i++) {
+            // vi영상과 ki 이상의 유사도를 갖는걸 answer로 찾음
+            int ki=0;
+            int vi=0;
+            int answer=0;
+            Boolean visit[] = new Boolean[N+1];
+            for(int k=0; k<=N; k++) visit[k] = false;
+
+            st = new StringTokenizer(br.readLine(), " ");
+            ki = Integer.parseInt(st.nextToken());
+            vi = Integer.parseInt(st.nextToken());
+
+            // vi 인접 Edge들부터 넣음
+            for (Edge e: adjList[vi]){
+                if(e.usado >= ki) {
+                    queue.add(e);
+                    visit[e.node] = true;       
+                }                  
+                visit[vi]= true;
+            }
+
+            while (!queue.isEmpty()) {
+                Edge nowEdge = queue.poll();
+
+                for(Edge nextEdge: adjList[nowEdge.node]) {
+                    if(!visit[nextEdge.node] && nextEdge.usado >= ki) {
+                        queue.add(nextEdge);
+                        visit[nextEdge.node]=true;
+                        bwT.write("a+"+nextEdge.node+" "+nextEdge.usado+"\n");
+                        bwT.flush();
+                        answer++;
+                    }
+                }
+            }
+            bw.write(answer+"\n");
+        }
+        bw.flush();
+        bw.close();
+    }
+}
+ */
+
+/* 인접행렬로 표현해서 풀어보려했는데 실패. 짱구가 안 굴러감
+import java.io.*;
+import java.util.StringTokenizer;
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Main {
+    // N은 영상 개수, Q는 질문 수
+    static int N, Q;
+    static int[][] givenUsado;
+    static int[][] calculatedUsado;
+    static int bestUsado;
+    static Queue<Integer> queueFrom = new LinkedList<>();
+    static Queue<Integer> queueTo = new LinkedList<>();
+
+    public static void calculateUsado(int from, int to) {
+        int tempFrom, tempTo;
+
+        for (int j=from; j<N; j++) {
+            if(givenUsado[from][j]!=0 && givenUsado[from][j]<bestUsado) {
+                    bestUsado = givenUsado[from][j];
+                    queueFrom.add(from);
+                    queueTo.add(j);
+            }            
+        }
+        while(!queueFrom.isEmpty()) {
+            tempFrom = queueFrom.poll();
+            tempTo = queueTo.poll();
+            if()
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        
+        
+        int from, to, usado;
+        int tempInt;
+        int [] usadoNorm;
+        int [] clipNum;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        N = Integer.parseInt(st.nextToken());
+        Q = Integer.parseInt(st.nextToken());
+
+        // 유사도 배열 초기화
+        givenUsado = new int[N][N];
+        calculatedUsado = new int[N][N];
+        for(int i=0; i<N; i++) {
+            for(int j=0; j<N; j++) {
+                givenUsado[i][j] = 0;
+                calculatedUsado[i][j] = 0;
+            }
+        }
+
+        // 유사도 받아 넣기
+        for(int i=0; i<N-1; i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            from = Integer.parseInt(st.nextToken());
+            to = Integer.parseInt(st.nextToken());
+            usado = Integer.parseInt(st.nextToken());
+
+            // 유사도 배열은 오른쪽 윗부분만 사용할 예정
+            if(from>to) {
+                tempInt = to;
+                to = from;
+                from = tempInt;
+            }
+            givenUsado[from][to] = usado;
+        }
+
+        // 문제 저장해두기
+        usadoNorm = new int[Q];
+        clipNum = new int[Q];
+        for(int i=0; i<Q; i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            usadoNorm[i] = Integer.parseInt(st.nextToken());
+            clipNum[i] = Integer.parseInt(st.nextToken());
+        }
+
+        // 유사도 계산 해 넣기
+        for(int i=0; i<N; i++) {
+            for (int j =i; j<N; j++){
+                if(i==j) {
+                    continue;
+                }
+
+                if(givenUsado[i][j]!=0) {
+                    calculatedUsado[i][j] = givenUsado[i][j];
+                }
+
+                bestUsado=1000000001;
+                calculateUsado(i, j);
+            }
+        }
+    }
+}
+ */
