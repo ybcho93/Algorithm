@@ -1,0 +1,58 @@
+import java.io.*;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+public class Main {
+    public static void main (String[] args) throws NumberFormatException, IOException {
+        int N=0;
+        int guess, inputStrike, inputBall;
+        Set<Integer> candidate = new HashSet<Integer>();
+        Iterator<Integer> it ;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        N = Integer.parseInt(br.readLine());
+
+        for(int i=1; i<=9; i++) {
+            for(int j=1; j<=9; j++) {
+                for(int k=1; k<=9; k++) {
+                    if(i!=j && j!=k && k!=i) candidate.add(100*i+10*j+k);
+                }
+            }
+        }
+
+        for(int i =0; i<N; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            guess = Integer.parseInt(st.nextToken());
+            inputStrike = Integer.parseInt(st.nextToken());
+            inputBall = Integer.parseInt(st.nextToken());
+            it = candidate.iterator();
+
+            while(it.hasNext()) {
+                int now;
+                now = it.next();
+                int strike=0;
+                int ball=0;
+                if(now/100 == guess/100)  strike++;
+                if((now%100)/10 == (guess%100)/10 ) strike++;
+                if((now%10) == (guess%10)) strike++;
+                if(now/100 == (guess%100)/10 || now/100 == guess%10 ) ball++;
+                if((now%100)/10 == guess/100 || (now%100)/10 == (guess%10)) ball++;
+                if((now%10) == guess/100 || (now%10) == (guess%100)/10) ball++;
+
+                if(inputStrike != strike || inputBall != ball) it.remove();
+            }
+            //bw.write(Integer.toString(candidate.size())+"\n");
+            //bw.flush();
+        }
+
+        bw.write(Integer.toString(candidate.size()));
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+}
