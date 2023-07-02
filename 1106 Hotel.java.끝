@@ -1,0 +1,145 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+
+public class Main {
+   
+
+    public static void main(String[] args) throws IOException {
+        int goal, cityNum;
+        int[] costArray;
+        int answer=0;
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        goal = Integer.parseInt(st.nextToken());
+        cityNum = Integer.parseInt(st.nextToken());
+        // (목표)+(도시 한 군데에서 100명을 구했을 때 99명이 남고) +(1은 index 0때문에)
+        costArray = new int[goal+100]; 
+
+        for(int i=0; i<goal+100; i++) {
+            costArray[i] = 9999999; // 도시당 최대 비용이 100인데 혹시 1명씩 1000명 구하려면 100,000까지 될 수 있음
+        }
+
+        for(int i=0; i<cityNum; i++) {
+            int cost, customer;
+
+            st = new StringTokenizer(br.readLine(), " ");
+            cost = Integer.parseInt(st.nextToken());
+            customer = Integer.parseInt(st.nextToken());
+
+            // 0번째를 안 넣으면 9999에다가 더해버려서 계속 9999
+            costArray[0]=0;
+            for(int j=customer; j<goal+100; j++) {
+                if(costArray[j] > costArray[j-customer]+cost){
+                    costArray[j] = costArray[j-customer]+cost;
+                }
+            }
+        }
+
+        // for(int i=goal; i<goal+100; i++) {
+        //     bw.write(costArray[i]+" ");
+        //     bw.write("\n");
+        //     bw.flush();
+        // }
+
+        answer = 9999999;
+        for(int i=goal; i<goal+100; i++) {
+            if(answer> costArray[i]) {
+                answer = costArray[i];
+            }
+        }
+
+        bw.write(answer+"\n");
+        bw.flush();
+        bw.close();
+        return;
+    }
+}
+
+// 일단 제일 효율 좋은 도시로 다 채우고 마지막에 조절하려했는데 
+// 상황이 너무 다양해 그리디로는 안됨
+/* 
+import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.StringTokenizer;
+
+class City implements Comparable<City> {
+    public int cost;
+    public int customer;
+
+    public City(int cost, int customer) {
+        super();
+        this.cost = cost;
+        this.customer = customer;
+    }
+
+    // 비용당 끌어들일 수 있는 사람을 비교한다.
+    @Override
+    public int compareTo(City compareCity){
+        if ((float)this.customer/(float)this.cost > (float)compareCity.customer/(float)compareCity.cost)
+            return -1;
+        else return 1;
+    }
+}
+
+public class Main {
+   
+
+    public static void main(String[] args) throws IOException {
+        int goal, cityNum, nowCustomer=0, nowCost=0;
+        List<City> cityList = new ArrayList<City>();
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        goal = Integer.parseInt(st.nextToken());
+        cityNum = Integer.parseInt(st.nextToken());
+
+        for(int i=0; i<cityNum; i++) {
+            int cost, customer;
+
+            st = new StringTokenizer(br.readLine(), " ");
+            cost = Integer.parseInt(st.nextToken());
+            customer = Integer.parseInt(st.nextToken());
+
+            cityList.add(new City(cost, customer));
+        }
+
+        Collections.sort(cityList);
+
+        for (int i=0; i<cityNum; i++) {
+            bw.write(cityList.get(i).cost+" "+cityList.get(i).customer+"\n");
+            bw.flush();
+        }
+        bw.close();
+
+        // 원하는 목표 관객수보다 많아질때까지 일단 다 채운다고 생각하고
+        while (goal > nowCustomer) {
+            nowCustomer = nowCustomer + cityList.get(0).customer;
+            nowCost = nowCost + cityList.get(0).cost;
+        }
+        // 한 번만 빼고 마지막에만 더 작은 비용으로 남은 관객 수를 채울 수 있는지 구해본다.
+        nowCustomer = nowCustomer - cityList.get(0).customer;
+        nowCost = nowCost - cityList.get(0).cost;
+
+        while (goal > nowCustomer) {
+            int tempIndex=cityNum;
+
+            for(int i=cityNum-1; i>=0; i--) {
+                if(nowCustomer + cityList.get(i).customer < goal) {
+                    // 이거 이렇게하면 안되네. 다르게 해야된다.
+                }
+            }
+        }
+
+        return;
+        
+    }
+}
+ */
