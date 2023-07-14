@@ -20,7 +20,8 @@ public class Main {
         costArray = new int[goal+100]; 
 
         for(int i=0; i<goal+100; i++) {
-            costArray[i] = 9999999; // 도시당 최대 비용이 100인데 혹시 1명씩 1000명 구하려면 100,000까지 될 수 있음
+            // 도시당 최대 비용이 100인데 혹시 1명씩 1000명 구하려면 100,000까지 될 수 있음
+            costArray[i] = 9999999;
         }
 
         for(int i=0; i<cityNum; i++) {

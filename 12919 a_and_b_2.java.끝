@@ -1,0 +1,75 @@
+import java.io.*;
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+
+        String source, target;
+        Queue<String> queue = new LinkedList<>(); 
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        source = br.readLine();
+        target = br.readLine();
+
+        queue.add(target);
+
+        // 목표가 더 길거나 같으면 비교해보고 문자열 자르기 진행
+        while( !queue.isEmpty() ) {
+            target = queue.poll();
+
+            if (source.equals(target)) {
+                bw.write("1");
+                bw.flush();
+                bw.close();
+                return;
+            } 
+
+            else if (source.length() >= target.length()) continue;
+
+            
+            if ( target.endsWith("A") && target.startsWith("B")) {
+                String temp = target;
+                queue.add(subOne(temp));
+                queue.add(subFrontAndReverse(target));
+            }
+
+            // A로 끝나면 A만 삭제
+            else if ( target.endsWith("A") ) {
+                target = subOne(target);
+                queue.add(target);
+            }
+            else if (target.startsWith("B")) {
+                target = subFrontAndReverse(target);
+                queue.add(target);
+            }
+            
+        }
+        
+        // 빠져나왔으면 안되는거니까 0 출력 후 종료
+        bw.write("0");
+        bw.flush();
+        bw.close();
+        return ;
+
+    }
+
+    public static String subOne (String str) {
+        String result="";
+        result = str.substring(0, str.length()-1);
+        return result;
+    }
+
+    public static String subFrontAndReverse (String str) {
+        String result="";
+        StringBuffer sb;
+
+        str = str.substring(1, str.length());
+        sb = new StringBuffer(str);
+        result = sb.reverse().toString();     
+
+        return result;
+    }
+}
