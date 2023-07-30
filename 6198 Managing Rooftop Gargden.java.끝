@@ -1,0 +1,37 @@
+import java.io.*;
+public class Main {
+    public static void main(String[] args) throws IOException {
+
+        int buildingCount, nowHeight;
+        long answer=0;
+        int[] heightArray = new int[80000];
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        buildingCount = Integer.parseInt(br.readLine());
+
+        // 빌딩 높이 입력받기
+        for(int i=0; i<buildingCount; i++) {
+            heightArray[i] = Integer.parseInt(br.readLine());
+        }
+
+        // 반복문 돌면서 세기
+        for(int i=0; i<buildingCount-1; i++) {
+            nowHeight = heightArray[i];
+            for (int j=i+1; j<buildingCount; j++) {
+                // 내 키가 더 크면 답에 더하기
+                if(nowHeight>heightArray[j]) {
+                    answer++;
+                }
+                else break;
+            }
+        }
+
+        bw.write(answer+"\n");
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+}
