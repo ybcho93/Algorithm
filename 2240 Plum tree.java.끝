@@ -1,0 +1,114 @@
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+
+        int timeTotal, moveCount;
+        int[] jaduLoc = new int[1001];
+        int[][] dp = new int[1001][31];
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        String[] input = br.readLine().split(" ");
+        timeTotal = Integer.parseInt(input[0]);
+        moveCount = Integer.parseInt(input[1]);
+
+        jaduLoc[0] = 0;
+        for(int i=1; i<=timeTotal; i++) {
+            jaduLoc[i] = Integer.parseInt(br.readLine());
+        }
+
+        // dp[i][j]는 i초에 j번 움직였을 때 가장 많이 주울 수 있는 자두 수
+        // 맨 처음에 자두가 1번 나무에서 떨어지면 1초에 0번움직이고 1개
+        if(jaduLoc[1] == 1) {
+            dp[1][0]=1;
+            //dp[1][1]=1;
+        }
+        // 처음자두가 2번 나무에서 떨어지면 1초에 0번움직이면 0개, 1번 움직이면 1개
+        else {
+            dp[1][0] = 0;
+            dp[1][1] = 1;
+        }
+        
+        for(int i =2; i<=timeTotal; i++) {
+            for(int j=0; j<=moveCount; j++) {
+                // 1번 나무에서 떨어질 때
+                if(jaduLoc[i]==1) {
+                    // 1번 나무로 올 때(이전부터 있을때 포함)
+                    if(j%2 == 0) {
+                        if(j==0) dp[i][j] = dp[i-1][j]+1;
+                        else dp[i][j] = Math.max(dp[i-1][j]+1, dp[i-1][j-1]+1);
+                    }
+                    // 2번 나무에 있을 때 
+                    else {
+                        if(j==0) dp[i][j] = dp[i-1][j];
+                        else dp[i][j] = Math.max(dp[i-1][j], dp[i-1][j-1]);
+                    }
+                } 
+                // 2번 나무에서 떨어질 때
+                else if (jaduLoc[i] == 2) {
+                    // 1번 나무에 있을 때
+                    if(j%2 == 0) {
+                        if(j==0) dp[i][j] = dp[i-1][j];
+                        else dp[i][j] = Math.max(dp[i-1][j], dp[i-1][j-1]);
+                    }
+                    // 2번 나무로 올 때(이전부터 있을때 포함) 
+                    else {
+                        if(j==0) dp[i][j] = dp[i-1][j]+1;
+                        else dp[i][j] = Math.max(dp[i-1][j]+1, dp[i-1][j-1]+1);
+                    }
+                }
+            }
+            
+        }
+        bw.write(Math.max(dp[timeTotal][moveCount], dp[timeTotal][moveCount-1])+"\n");
+        bw.flush();
+        bw.close();
+    }
+}
+
+
+/* 
+import java.io.*;
+import java.util.PriorityQueue;
+import java.util.Collections;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+
+        int timeTotal, moveCount;
+        int[] jaduLoc = new int[1000];
+        int nowLoc =1;
+        int jaduStraight=0;
+        PriorityQueue<Integer> straightQueue = new PriorityQueue<>(Collections.reverseOrder());
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        String[] input = br.readLine().split(" ");
+        timeTotal = Integer.parseInt(input[0]);
+        moveCount = Integer.parseInt(input[1]);
+
+        jaduLoc[0] = Integer.parseInt(br.readLine());
+        jaduStraight = 1;
+        for(int i=1; i<timeTotal; i++) {
+            jaduLoc[i] = Integer.parseInt(br.readLine());
+            // 이전 자두와 같으면 연속된 자두의 수를 구함
+            if(jaduLoc[i] == jaduLoc[i-1]) {
+                jaduStraight++;
+            }
+            else {
+                straightQueue.add(jaduStraight);
+                jaduStraight = 1;
+            }
+        }
+        straightQueue.add(jaduStraight);
+
+        
+
+        bw.close();
+        return;
+    }
+}
+*/
