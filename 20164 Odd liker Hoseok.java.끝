@@ -1,0 +1,156 @@
+import java.io.*;
+
+public class Main {
+    static int num, num2, num3;
+    static int oddNum = 0;
+    static int min = 1000000000, max = 0;
+    static String strNum, strNum2, strNum3;
+
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        strNum = br.readLine();
+        num = Integer.parseInt(strNum);
+
+        cut(strNum, getOdd(strNum));
+
+        bw.write(min + " " + max);
+        bw.flush();
+        bw.close();
+    }
+
+    static int getOdd(String strNum) {
+        int odd = 0;
+        for (int i = 0; i < strNum.length(); i++) {
+            if (strNum.charAt(i) % 2 == 1)
+                odd++;
+        }
+        return odd;
+    }
+
+    static void cut(String strNum, int odd) throws IOException {
+        String nowString = strNum;
+        int strlen = strNum.length();
+
+        // BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        // bw.write("cut "+ strNum+ " "+ odd+"\n");
+        // bw.flush();
+        if(strlen ==1) {
+            if(min > odd) min = odd;
+            if(max < odd) max = odd;
+            return;
+        }
+
+        // 길이가 2면 2개로 자름
+        if (strlen == 2) {
+            int nextNum;
+
+            strNum2 = strNum.substring(1);
+            strNum = strNum.substring(0, 1);
+            strNum3 = null;
+
+            nextNum= Integer.parseInt(strNum)+Integer.parseInt(strNum2);
+
+            cut(Integer.toString(nextNum), odd+getOdd(Integer.toString(nextNum)));
+            
+        }
+        // 길이가 3 이상이면 3개로 자름
+        else {
+            for (int i = 1; i < strlen - 1; i++) {
+                for (int j = i+1; j < strlen; j++) {
+                    // bw.write("here, "+strlen+" "+i+" "+ j+ "\n");
+                    // bw.flush();
+                    int nextNum; 
+
+                    strNum3 = nowString.substring(j);
+                    strNum2 = nowString.substring(i, j);
+                    strNum = nowString.substring(0, i);
+
+                    // bw.write(strNum+" ");
+                    // bw.write(strNum2+" ");
+                    // bw.write(strNum3+" \n");
+                    // bw.flush();
+
+                    nextNum= Integer.parseInt(strNum)+Integer.parseInt(strNum2)+Integer.parseInt(strNum3);
+                    cut(Integer.toString(nextNum), odd+getOdd(Integer.toString(nextNum)));
+                    
+                    // bw.write("here 2, "+strlen+" "+ j+ "\n");
+                    // bw.flush();
+                }
+            }
+        }
+    }
+}
+
+/*
+ * import java.io.*;
+ * 
+ * public class Main {
+ * 
+ * public static void main(String[] args) throws IOException {
+ * int num, num2, num3;
+ * int oddNum=0;
+ * int min=1000000000, max=0;
+ * String strNum, strNum2, strNum3;
+ * 
+ * BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+ * BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+ * 
+ * strNum = br.readLine();
+ * num = Integer.parseInt(strNum);
+ * 
+ * for(int i=0; i<strNum.length(); i++) {
+ * if(strNum.charAt(i)%2==1) oddNum++;
+ * }
+ * 
+ * while(strNum.length()>1) {
+ * // 길이가 2면 2개로 자름
+ * if(strNum.length()==2) {
+ * strNum2 = strNum.substring(1);
+ * strNum = strNum.substring(0, 1);
+ * strNum3 = "";
+ * 
+ * for(int i=0; i<strNum.length(); i++) {
+ * if(strNum.charAt(i)%2==1) oddNum++;
+ * }
+ * for(int i=0; i<strNum2.length(); i++) {
+ * if(strNum2.charAt(i)%2==1) oddNum++;
+ * }
+ * 
+ * if(min>oddNum) min=oddNum;
+ * if(max<oddNum) max=oddNum;
+ * }
+ * // 길이가 3 이상이면 3개로 자름
+ * else {
+ * int tempmin=1000000000, tempmax=0, tempsum=0;
+ * for(int i=1; i<strNum.length()-1; i++) {
+ * for(int j=i; j<strNum.length(); j++) {
+ * strNum3 = strNum.substring(j);
+ * strNum2 = strNum.substring(i, j);
+ * strNum = strNum.substring(0, i);
+ * 
+ * for(int k=0; k<strNum.length(); k++) {
+ * if(strNum.charAt(k)%2==1) tempsum++;
+ * }
+ * for(int k=0; k<strNum2.length(); k++) {
+ * if(strNum2.charAt(k)%2==1) tempsum++;
+ * }
+ * for(int k=0; k<strNum2.length(); k++) {
+ * if(strNum3.charAt(k)%2==1) tempsum++;
+ * }
+ * 
+ * if(tempmin > tempsum) tempmin=tempsum;
+ * if(tempmax < tempsum) tempmax=tempsum;
+ * }
+ * }
+ * }
+ * }
+ * 
+ * 
+ * 
+ * return;
+ * }
+ * }
+ */

@@ -56,23 +56,7 @@ public class Main {
             }
         }
 
-
-        for(int i=1; i<buildingNum+1; i++) {
-            for(int j=1; j<buildingNum+1; j++) {
-                bw.write(adj[i][j]+" ");
-            }
-            bw.write("\n");
-            bw.flush();
-        }bw.write("\n");
-        for(int i=1; i<buildingNum+1; i++) {
-            for(int j=1; j<buildingNum+1; j++) {
-                bw.write(dist[i][j]+" ");
-            }
-            bw.write("\n");
-            bw.flush();
-        }
-
-        // i, j가 선택됐을 때, k 건물에서 i,j까지의 거리의 합을 구함
+        // i, j가 선택됐을 때, 각 건물 k 에서 i,j까지의 거리의 합을 구함
         for(int i=1; i<buildingNum+1; i++) {
             for(int j=i+1; j<buildingNum+1; j++) {
                 int distTemp=0;
