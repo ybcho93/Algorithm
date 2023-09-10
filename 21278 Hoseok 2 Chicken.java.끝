@@ -1,0 +1,151 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+
+public class Main {   
+
+    public static void main(String[] args) throws IOException {
+        int buildingNum, roadNum;
+        int a, b;
+        int answerA=300, answerB=300, answerDistance=100000;   
+        int adj[][], dist[][];
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        buildingNum = Integer.parseInt(st.nextToken());
+        roadNum = Integer.parseInt(st.nextToken());
+
+        adj = new int[buildingNum+1][buildingNum+1];
+        dist = new int[buildingNum+1][buildingNum+1];
+
+        // 인접행렬 초기화
+        for(int i=1; i<buildingNum+1; i++) {
+            for(int j=1; j<buildingNum+1; j++) {
+                adj[i][j]=0; 
+            }
+        }
+
+        // 인접행렬에 연결된 길 표시
+        for(int i=0; i<roadNum; i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            a = Integer.parseInt(st.nextToken());
+            b = Integer.parseInt(st.nextToken());
+
+            adj[a][b]=1;
+            adj[b][a]=1;
+        }
+        
+
+        // 거리를 표시한 행렬에 인접행렬 내용 + 못 가는 길 무한 표시
+        for(int i=1; i<buildingNum+1; i++) {
+            for(int j=1; j<buildingNum+1; j++) {
+                if(i==j) dist[i][j]=0;
+                else if(adj[i][j]!=0) dist[i][j] = adj[i][j];
+                else dist[i][j] = 100000;
+            }
+        }
+
+        // 플로이드 와샬 알고리즘
+        for(int k=1; k<buildingNum+1; k++) {
+            for(int i=1; i<buildingNum+1; i++) {
+                for(int j=1; j<buildingNum+1; j++) {
+                    dist[i][j] = Math.min(dist[i][j], dist[i][k]+dist[k][j]);
+                }
+            }
+        }
+
+
+        for(int i=1; i<buildingNum+1; i++) {
+            for(int j=1; j<buildingNum+1; j++) {
+                bw.write(adj[i][j]+" ");
+            }
+            bw.write("\n");
+            bw.flush();
+        }bw.write("\n");
+        for(int i=1; i<buildingNum+1; i++) {
+            for(int j=1; j<buildingNum+1; j++) {
+                bw.write(dist[i][j]+" ");
+            }
+            bw.write("\n");
+            bw.flush();
+        }
+
+        // i, j가 선택됐을 때, k 건물에서 i,j까지의 거리의 합을 구함
+        for(int i=1; i<buildingNum+1; i++) {
+            for(int j=i+1; j<buildingNum+1; j++) {
+                int distTemp=0;
+                for(int k=1; k<buildingNum+1; k++) {
+                    distTemp += Math.min(dist[i][k], dist[j][k]);
+                }
+                if(answerDistance > distTemp) {
+                    answerA = i;
+                    answerB = j;
+                    answerDistance = distTemp;
+                }
+            }
+        }
+        bw.write(answerA+" "+answerB+" "+answerDistance*2);
+        bw.flush();
+        bw.close();
+        return;
+    }
+}
+
+/* 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+
+public class Main {   
+
+    public static void main(String[] args) throws IOException {
+        int buildingNum, roadNum;        
+        int a, b, answerA=1, answerB=2, answerDistance=300;
+        // ArrayList 안에 ArrayList
+        ArrayList<ArrayList<Integer>> adjList;
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        buildingNum = Integer.parseInt(st.nextToken());
+        roadNum = Integer.parseInt(st.nextToken());
+
+        adjList = new ArrayList<ArrayList<Integer>>();
+
+        // adjList[0]은 비워두고 adjList[1~buildingNum]까지 사용할 예정
+        for(int i=0; i<buildingNum+1; i++) {
+            adjList.add(new ArrayList<Integer>());
+        }
+
+        for(int i=0; i<roadNum; i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            a = Integer.parseInt(st.nextToken());
+            b = Integer.parseInt(st.nextToken());
+
+            adjList.get(a).add(b);
+            adjList.get(b).add(a);
+        }
+        
+        for(int i=0; i<buildingNum+1; i++) {
+            for(int j=0; j<adjList.get(i).size(); j++) {
+                bw.write(adjList.get(i).get(j)+" ");
+            }
+            bw.write("\n");
+            bw.flush();
+        }
+
+        for(int nowA=1; nowA<buildingNum+1; nowA++) {
+            for(int nowB=2; nowB<buildingNum+1; nowB++) {
+                // 1만번 * 탐색(최대 1만번) = 최대 1억번? 가능?
+            }
+        } 
+
+        bw.close();
+        return;
+    }
+}
+ */
