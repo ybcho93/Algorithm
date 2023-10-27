@@ -1,0 +1,53 @@
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        String str;
+        boolean boolArr[] = new boolean[100];
+        String nowString;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        str = br.readLine();
+
+        // Arr 초기화
+        for(int i=0; i<100; i++) {
+            boolArr[i] = false;
+        }
+        
+        
+        // i는 출력할 글자가 한 글자씩 늘어날때마다 증가
+        for(int i=0; i<str.length();i++) {
+            int addIndex=0;
+            nowString ="zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+            // 현재의 문자열에다가 하나씩 늘려보면서 사전순으로 뭐가 앞인지 비교하고
+            for (int j=0; j<str.length();j++) {
+                // j번째 문자를 추가하여 문자열을 만듦
+                String tempString="";
+                if(boolArr[j]==false) {
+                    // j번째 문자가 아직 안 들어가있으면 추가해봄
+                    for(int k=0; k<str.length(); k++) {
+                        if(boolArr[k]==true||j==k) {
+                            tempString+=Character.toString(str.charAt(k));
+                            // bw.write(tempString+"\n");
+                            // bw.flush();
+                        }
+                    }
+                    // 만든 문자열이 현재 문자열보다 사전순으로 앞이면 boolArr를 true로 만들 j를 저장하고 nowFirst수정
+                    if(nowString.compareTo(tempString)>0) {
+                        nowString = tempString;
+                        addIndex=j;
+                    }
+                }
+                else continue;                
+            }
+            boolArr[addIndex]=true;
+            // nowString이 추가됐을거니까 이거 출력
+            bw.write(nowString+"\n");
+            bw.flush();
+                       
+        }
+        return;
+    }
+}
