@@ -16,21 +16,12 @@ public class Main {
         if ((i + j) % 2 == 0) {
             if (operator == '+') {
                 nowResult += Character.getNumericValue(map[i][j]);
-                bw.write(i + ", " + j + ", " + nowResult + ", "+ operator+"\n");
-                bw.write(nowResult +"(+"+map[i][j]+")\n");
-                bw.flush();
             }
             if (operator == '-') {
                 nowResult -= Character.getNumericValue(map[i][j]);
-                bw.write(i + ", " + j + ", " + nowResult + ", "+ operator+"\n");
-                bw.write(nowResult +"(-"+map[i][j]+")\n");
-                bw.flush();
             }
             if (operator == '*') {
                 nowResult *= Character.getNumericValue(map[i][j]);
-                bw.write(i + ", " + j + ", " + nowResult + ", "+ operator+"\n");
-                bw.write(nowResult +"(*"+map[i][j]+")\n");
-                bw.flush();
             }
             // 옆이랑 아래로 각각 N-1번 이동했으면 학교 도착 완료. 최대 최소값 비교 후 끝
             if (i == N - 1 && j == N - 1) {
