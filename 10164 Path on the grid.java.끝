@@ -1,0 +1,53 @@
+import java.io.*;
+import java.math.BigInteger;
+import java.util.StringTokenizer;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        int N, M, K;
+        BigInteger[] factorial = new BigInteger[31];
+        int n, m, n2, m2;
+
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = null;
+        
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+
+        factorial[0]=new BigInteger("1");
+        factorial[1]=new BigInteger("1");
+        for(int i=2; i<31; i++) {
+            factorial[i] = factorial[i-1].multiply(new BigInteger(String.valueOf(i)));
+        }
+        // for(int i=0; i<31; i++) {
+        //     bw.write(i+" "+factorial[i]+"\n");
+        //     bw.flush();
+        // }
+
+
+        if(K==0) {
+            n = N-1;
+            m = M-1;
+            // (n+m)!/n!*m!
+            bw.write((factorial[n+m]).divide(factorial[n].multiply(factorial[m]))+"\n");
+
+        } else {
+            m = (K-1)/M;
+            // (1+(m*M)) + n = K
+            n = K-(1+(m*M));
+
+            m2 = ((N*M)-K)/M;
+            // K+ (m2*M) + n2 = N*M
+            n2 = (N*M) - (m2*M) - K;
+
+            // ((n+m)!/n!*m!) * ((n2+m2)!/n2!*m2!)
+            bw.write(((factorial[n+m]).divide(factorial[n].multiply(factorial[m]))).multiply((factorial[n2+m2]).divide(factorial[n2].multiply(factorial[m2])))+"\n");
+        }
+        bw.flush();
+        bw.close();
+    }
+}
