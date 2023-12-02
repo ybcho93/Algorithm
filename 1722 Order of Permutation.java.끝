@@ -1,0 +1,154 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
+public class Main {   
+
+    public static void main(String[] args) throws IOException {
+        long N, n, k;
+        List<Integer> list = new ArrayList<>();
+        long[] factorial;
+        long[] arr;
+        long answer=0;
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        N = Integer.parseInt(br.readLine());
+        String s = br.readLine();
+        StringTokenizer st = new StringTokenizer(s);
+        n = Integer.parseInt(st.nextToken());
+
+        factorial = new long[(int)N+1];
+        factorial[0]=1;
+        for(int i=1; i<=N; i++) {
+            factorial[i]=factorial[i-1]*i;
+            list.add(i);
+        }
+
+        // k번째 수열 구하기
+        if(n==1) {
+            long index=0;
+            // k는 4번째면 0번째부터 따지면 3번째니까 3으로 놓고 푼다.
+            k = Long.parseLong(st.nextToken())-1;
+            for(int i=0; i<N; i++) {
+                index = k / factorial[(int)N-1-i];
+                //bw.write("k: "+k+" "+"\n");
+                bw.write(list.get((int)index)+" ");
+                list.remove((int)index);
+                k = k % factorial[(int)N-1-i];
+            }
+            bw.flush();
+            bw.close();
+        }
+        // 이 수열이 몇번째인지 구하기
+        if(n==2) {
+            int index=0;
+            arr = new long[(int)N];
+            for(int i=0; i<N; i++) {
+                arr[i] = Integer.parseInt(st.nextToken());
+            }
+            for(int i=0; i<N; i++) {
+                for(index=0; index<N;index++) {
+                    if(arr[i]==list.get(index)) break;
+                }
+                answer += index * factorial[(int)N-1-i];
+                list.remove(index);
+            }
+            bw.write(answer+1+"\n");
+            bw.flush();
+            bw.close();
+        }
+        return;
+    }
+}
+
+/* 
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {   
+
+    public static void main(String[] args) throws IOException {
+        int N, n, k;
+        int[] arr;
+        int[] ans;
+        int[] factorial;
+        boolean[] used;
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        N = Integer.parseInt(br.readLine());
+        String s = br.readLine();
+        StringTokenizer st = new StringTokenizer(s);
+        n = Integer.parseInt(st.nextToken());
+
+        // 헷갈리니까 그냥 다 1부터 인덱스 시작
+        factorial = new int[N+1];
+        arr = new int[N+1];
+        ans = new int[N+1];
+
+        factorial[0]=1;
+        factorial[1]=1;
+        for(int i=2; i<=N; i++) {
+            factorial[i]=factorial[i-1]*i;
+        }
+    
+        // k번째 수열 구하기
+        if(n==1) {
+            for(int i=0; i<=N; i++) {
+                arr[i]=i;
+            }
+            k = Integer.parseInt(st.nextToken()); ////1을 더하는게 맞나..
+            for (int i=1; i<=N;i++) {
+                // index번째 숫자를 이번 칸에 넣어야된다.
+                int index=(k / factorial[N-i]);
+                if( k%factorial[N-i]!=0) index++;  
+                bw.write(k+" / " + (N-i) + "!+1 = " );
+                bw.flush();
+                bw.write("index: "+index+"\n");
+                bw.flush();
+                ans[i] = arr[index];
+                
+                // 넣었으면 arr에서 넣은 숫자를 빼줘야 다음에 남은 숫자중에서 따져서 넣을 수 있음
+                for(int j=index; j<N; j++) {
+                    // 맨 뒤에는 쓰레기값 남긴 하는데 상관 없을듯
+                    arr[j]=arr[j+1];
+                }
+                arr[0]=arr[1];
+                k = k % factorial[N-i];   
+            }
+            for (int i=1; i<=N; i++) {
+                bw.write(ans[i]+" ");
+            }
+            bw.write("\n");
+            bw.flush();
+            bw.close();
+        }
+
+        // 이 수열이 몇 번째인지 구하기
+        if(n==2) {
+            int answer=0;
+            int index=0;
+            for(int i=1; i<=N; i++) {
+                arr[i]=i;
+                ans[i]=Integer.parseInt(st.nextToken());
+            }
+            for(int i=1; i<=N; i++) {
+                int gap;
+                for(gap=0; gap<=N; gap++) {
+                    if(ans[i]==arr[i+gap]) break;
+                }
+                answer += (gap)*factorial[N-i];
+                for(int j=i; j<=N; j++) {
+                    //arr[]
+                }
+            }
+        }
+
+        return;
+    }
+}
+       */

@@ -1,0 +1,165 @@
+import java.io.*;
+import java.util.Arrays;
+import java.util.Collections;
+
+public class Main {   
+
+    public static void main(String[] args) throws IOException {
+        int N;
+        int weight[] = new int[26];
+        String strArr[];
+        int max=0;
+        int nowNum=9;
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        N = Integer.parseInt(br.readLine());
+        strArr = new String[N];
+        for (int i = 0; i < N; i++) {
+            strArr[i] = br.readLine();
+        }
+
+        for (int i=0; i<26; i++) weight[i] = 0;
+        // weight[0]~weight[26]은 A~Z까지의 가중치
+        for(int i=0; i<N; i++) {
+            for(int j=0; j<strArr[i].length(); j++) {
+                // weight
+                weight[strArr[i].charAt(j)-'A'] += Math.pow(10, strArr[i].length()-j-1);
+            }
+        }
+
+        // 가중치 큰 순서대로 정렬
+        Integer[] tmp = Arrays.stream(weight).boxed().toArray(Integer[]::new);
+        Arrays.sort(tmp, Collections.reverseOrder());
+
+        for(int i=0; i<10; i++) {
+            max += tmp[i]*nowNum;
+            nowNum--;
+        }
+
+        bw.write(max+"\n");
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+}
+/*
+import java.io.*;
+
+public class Main {
+    static int N;
+    static String[] strArr;
+    static int[] alphabet = new int[26];
+    static boolean[] usable = new boolean[10];
+    static int max = 0;
+    static int alphaNum = 0;
+
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+    // alphabet 배열에다가 숫자를 순서대로 할당하고 계산 해본다.
+    // index는 할당 완료된 Alphabet 개수
+    static void recursive(int index) throws IOException {
+        int temp = 0;
+
+        // 0부터 시작했고 9까지 숫자를 채웠으니까 10이면 할당이 끝났음
+        if (index >= alphaNum) {
+            int sum = 0;
+            // 숫자 계산하기
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < strArr[i].length(); j++) {
+                    sum += alphabet[(int) strArr[i].charAt(j) - 'A'] * Math.pow(10, strArr[i].length() - j - 1);
+                }
+            }
+            if (max < sum) {
+                max = sum;
+                // for (int k = 0; k < 26; k++) {
+                //     bw.write(alphabet[k] + " ");
+                // }
+                // bw.write("\n");
+                // bw.write("max: " + sum + "\n");
+                // bw.flush();
+            }
+        }
+
+        for (int i = 0; i < 26; i++) {
+            // alphabet 배열에 -1이면 해당 알파벳이 입력중에 없었던 거니까 패스
+            if (alphabet[i] == -1) {
+                continue;
+            }
+            // 알파벳 배열에 -1이 아닌걸 발견했으니 해당 알파벳에 숫자를 할당해야함
+            // index개수만큼은 이미 할당된거니까 패스하기위해 alphabet 배열에 -1아닌 것 하나당 하나씩 temp를 증가시켜줌
+            // 그 이후 숫자 중에 할당 안된 것 체크 후 할당하고 다시 재귀호출
+            else {
+                temp++;
+                // temp 가 index보다 더 크면 이 i에 해당하는 알파벳에 숫자를 할당해야함
+                if (temp > index) {
+                    for (int j = 0; j < 10; j++) {
+                        // 할당할 때 이 숫자가 다른 alphabet에 할당 됐는지 확인하고 해야함
+                        // 할당 했으면 호출하고, 그 usable 풀어줘서 다음번 돌 때 숫자 쓸수있게 해줘야 함
+                        if (usable[j]) {
+                            alphabet[i] = j;
+                            usable[j] = false;
+                            recursive(index + 1);
+                            
+                            //   for (int k = 0; k < 26; k++) {
+                            //   bw.write(alphabet[k] + " ");
+                            //   }
+                            //   bw.write("\n");
+                            //   bw.write("call recursive " + (index + 1) + "\n");
+                            //   bw.flush();
+                            
+                            usable[j] = true;
+                        }
+                    }
+                    //할당 해줬던거 풀어줘야됨
+                    alphabet[i] = -2;
+                }
+            }
+        }
+        return;
+    }
+
+    public static void main(String[] args) throws IOException {
+        // 입력 받기
+        N = Integer.parseInt(br.readLine());
+        strArr = new String[N];
+        for (int i = 0; i < N; i++) {
+            strArr[i] = br.readLine();
+        }
+
+        // alphabet 배열 초기화
+        for (int i = 0; i < 26; i++) {
+            alphabet[i] = -1;
+        }
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < strArr[i].length(); j++) {
+                // 해당 알파벳이 있으면 일단 해당 알파벳을 일단 -2으로 만듦
+                alphabet[(int) strArr[i].charAt(j) - (int) 'A'] = -2;
+            }
+        }
+        for (int j = 0; j < 26; j++) {
+            if (alphabet[j] == -2) {
+                alphaNum++;
+            }
+        }
+        // bw.write("alphanum: " + alphaNum + "\n");
+        // bw.flush();
+
+        // usable 초기화
+        for (int i = 0; i < 10; i++) {
+            usable[i] = true;
+        }
+
+        recursive(0);
+
+        bw.write(max + "\n");
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+} 
+*/
