@@ -1,0 +1,58 @@
+import java.io.*;
+
+public class Main {
+    public static void main (String[] args) throws NumberFormatException, IOException {
+        int dishCount, chobabNum, inARowNum, coupon;
+        int belt[];
+        int max, result=0;
+        boolean ate[];
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        String[] input = br.readLine().split(" ");
+        
+        dishCount = Integer.parseInt(input[0]);
+        chobabNum = Integer.parseInt(input[1]);
+        inARowNum = Integer.parseInt(input[2]);
+        coupon = Integer.parseInt(input[3]);
+
+        belt = new int[dishCount];
+        ate = new boolean[chobabNum+1];
+
+        for(int i=0; i<dishCount; i++) {
+            belt[i] = Integer.parseInt(br.readLine());
+        }
+
+        // 0번인덱스부터 시작
+        for(int i=0; i<dishCount; i++) {
+            // 값 초기화
+            max=0;
+            for (int j=0; j<chobabNum+1; j++) {
+                ate[j]= false;
+            }
+
+            // k번째 초밥을 먹기
+            for( int k=i; k<inARowNum+i; k++) {
+                if(ate[belt[k%dishCount]]==false) {
+                    max++;
+                    ate[belt[k%dishCount]]=true;
+                    // bw.write(k%dishCount+" ");
+                    // bw.flush();
+                }
+            }
+            if(ate[coupon]==false) {
+                max++;
+                // bw.write("+ coupon \n");
+            }
+            if(result<max) result=max;
+            // bw.write("max: "+max+"\n");
+        }
+
+        bw.write(result+"\n");
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+}
