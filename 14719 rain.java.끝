@@ -1,0 +1,82 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+
+public class Main {
+   
+
+    public static void main(String[] args) throws IOException {
+        int H, W;
+        int height[];
+        int map[][];
+        boolean blocked;
+        int temp=0;
+        int ans=0;
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        H = Integer.parseInt(st.nextToken());
+        W = Integer.parseInt(st.nextToken());
+
+        height = new int[W];
+        map = new int[H][W];
+        st = new StringTokenizer(br.readLine(), " ");
+        for(int i=0; i<W; i++) {
+            height[i] = Integer.parseInt(st.nextToken());
+        }
+
+        // -1은 벽, 0은 빈칸
+        for (int i=0; i<H; i++) {
+            for(int j=0; j<W; j++) {
+                map[i][j]=0;
+            }
+        }
+           
+        for (int j=0; j<W; j++) {
+            for(int i=0; i<height[j]; i++) {
+                map[i][j]=-1;
+            }
+        }
+
+        // 맨 위부터 막힌 칸을 찾는다.
+        for(int i=H-1; i>=0; i--) {
+            // blocked로 왼쪽이 막혔는지 아닌지 판단.
+            blocked = false;
+            temp = 0;
+            for(int j=0; j<W; j++) {
+                // 벽을 만났을 때
+                if(map[i][j]==-1) {
+                    // 첫 벽일 때는 표시만 하고 다음으로.
+                    if(blocked==false) blocked = true;
+                    // 닫는 벽일때는 temp에 모아뒀던걸 ans에 더함
+                    else { 
+                        ans += temp;
+                        temp =0;
+                        //bw.write(i+": "+ ans+"\n");
+                    }
+                }
+                // 빈칸일 때
+                else {
+                    // 왼쪽이 막혀있으면 일단 temp에다가 추가, 왼쪽이 안 막혀있으면 어차피 버림
+                    if(blocked) { 
+                        temp++;
+                    }
+                }
+            }
+        }
+
+        // for (int i=0; i<H; i++) {
+        //     for(int j=0; j<W; j++) {
+        //         bw.write(map[H-i-1][j]+" ");
+        //     }
+        //     bw.write("\n");
+        // }
+        bw.write(ans+"\n");
+        bw.flush();
+        bw.close();
+
+        return;
+    }
+}
