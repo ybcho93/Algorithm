@@ -1,0 +1,221 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {
+
+    static int N;
+    static String map[][];
+    // 선생님 위치 좌표
+    static int teacherLocation[][] = new int[9][2];
+    static int teacherNum;
+    // 장애물 위치 좌표
+    static int obstacleLocation[][] = new int[3][2];
+    static int obstacleNum;
+    static boolean safe=true;
+
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+    public static boolean isSafe() throws IOException {
+        for (int T = 0; T < teacherNum; T++) {
+            // 4 방향으로 체크
+            // 위로 올라가면서 체크
+            for (int i = teacherLocation[T][0]; i > 0; i--) {
+                // X이면 더 올라가면서 체크
+                if (map[i][teacherLocation[T][1]].equals("X")||map[i][teacherLocation[T][1]].equals("T")) {
+                    continue;
+                }
+                // O이면 위 방향으로는 더이상 체크 X
+                else if (map[i][teacherLocation[T][1]].equals("O")) {
+                    break;
+                }
+                // S이면 들켰으니까 탈락. 함수 종료
+                else{
+                    //bw.write(teacherLocation[T][0]+" "+teacherLocation[T][1]+" -> " + i+" "+teacherLocation[T][1]+" 탈락");
+                    //bw.flush();
+                    return false;
+                }
+            }
+
+            // 아래로 내려가면서 체크
+            for (int i = teacherLocation[T][0]; i <= N; i++) {
+                // X이면 더 내려가면서 체크
+                if (map[i][teacherLocation[T][1]].equals("X")||map[i][teacherLocation[T][1]].equals("T")) {
+                    continue;
+                }
+                // O이면 더이상 체크 X
+                else if (map[i][teacherLocation[T][1]].equals("O")) {
+                    break;
+                }
+                // S이면 들켰으니까 탈락. 함수 종료
+                else{
+                    //bw.write(teacherLocation[T][0]+" "+teacherLocation[T][1]+" -> " + i+" "+teacherLocation[T][1]+" 탈락");
+                    //bw.flush();
+                    return false;
+                }
+            }
+
+            // 왼쪽으로 가면서 체크
+            for (int j = teacherLocation[T][1]; j > 0; j--) {
+                // X이면 더 올라가면서 체크
+                if (map[teacherLocation[T][0]][j].equals("X")||map[teacherLocation[T][0]][j].equals("T")) {
+                    continue;
+                }
+                // O이면 위 방향으로는 더이상 체크 X
+                else if (map[teacherLocation[T][0]][j].equals("O")) {
+                    break;
+                }
+                // S이면 들켰으니까 탈락
+                else{
+                    //bw.write(teacherLocation[T][0]+" "+teacherLocation[T][1]+" -> " + teacherLocation[T][0]+" "+j+" 탈락");
+                    //bw.flush();
+                    return false;
+                }
+            }
+
+            // 오른쪽으로 가면서 체크
+            for (int j = teacherLocation[T][1]; j <= N; j++) {
+                // X이면 더 올라가면서 체크
+                if (map[teacherLocation[T][0]][j].equals("X") || map[teacherLocation[T][0]][j].equals("T")) {
+                    continue;
+                }
+                // O이면 위 방향으로는 더이상 체크 X
+                else if (map[teacherLocation[T][0]][j].equals("O")) {
+                    break;
+                }
+                // S이면 들켰으니까 탈락
+                else{
+                    //bw.write(teacherLocation[T][0]+" "+teacherLocation[T][1]+" -> " + teacherLocation[T][0]+" "+j+" 탈락");
+                    //bw.flush();
+                    return false;
+                }
+            }
+        }
+        // 다 보고 안 들켯으면 true;
+        return true;
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        
+
+        N = Integer.parseInt(br.readLine());
+        map = new String[N + 1][N + 1];
+
+        // 입력 받기
+        for (int i = 1; i <= N; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            for (int j = 1; j <= N; j++) {
+                map[i][j] = st.nextToken();
+                if (map[i][j].equals("T")) {
+                    teacherLocation[teacherNum][0] = i;
+                    teacherLocation[teacherNum][1] = j;
+                    teacherNum++;
+                }
+            }
+        }
+       
+        // 장애물 O의 위치 정하기
+        for(int i=1;i<=N; i++){
+        for(int j=1; j<=N; j++) {
+            if(map[i][j].equals("X")) {
+                obstacleLocation[0][0] = i;
+                obstacleLocation[0][1] = j;
+                map[i][j] = "O";
+                obstacleNum++;            
+            }
+            else { // X가 아니고 S나 T 있으면 다음 자리로 이동
+                continue;
+            }
+            for(int k=1;k<=N; k++) {
+            for(int l=1; l<=N; l++) {
+                if(map[k][l].equals("X")) {
+                    obstacleLocation[1][0] = k;
+                    obstacleLocation[1][1] = l;
+                    map[k][l] = "O";
+                    obstacleNum++;            
+                }
+                else { // X가 아니고 S나 T 있으면 다음 자리로 이동
+                    continue;
+                }
+                for(int m=1;m<=N; m++) {
+                for(int n=1; n<=N; n++) {
+                    if(map[m][n].equals("X")) {
+                        obstacleLocation[2][0] = m;
+                        obstacleLocation[2][1] = n;
+                        map[m][n] = "O";
+                        obstacleNum++;            
+                    }
+                    else { // X가 아니고 S나 T 있으면 다음 자리로 이동
+                        continue;
+                    }
+                    // bw.write("\n---now Obstacles---\n");
+                    // bw.write(obstacleLocation[0][0] +" "+obstacleLocation[0][1]+" / ");
+                    // bw.write(obstacleLocation[1][0] +" "+obstacleLocation[1][1]+" / ");
+                    // bw.write(obstacleLocation[2][0] +" "+obstacleLocation[2][1]+" / ");
+                    // bw.flush();
+                    // 다 넣었으면 안들킬 수 있는지 체크
+                    if(isSafe()) {
+                        bw.write("YES"+"\n");
+                        bw.flush();
+                        bw.close();
+                        return;
+                    } else {
+                        obstacleNum--;  
+                        map[m][n]="X";
+                    }
+                }
+                }
+                obstacleNum--; 
+                map[k][l]="X";            
+            }
+            }
+            obstacleNum--; 
+            map[i][j]="X";
+        }
+        }
+
+
+
+        
+        // 장애물 O의 위치 정하기
+        // for (int count = 0; count < 3; count++) {
+        //     obstacleNum=0;
+        //     for (int i = 1; i <= N; i++) {
+        //         for (int j = 1; j <= N; j++) {
+        //             // 장애물이 이미 놓여있는 위치이면 다른 위치 찾아서 그냥 넘어감
+        //             if((obstacleLocation[0][0]==i && obstacleLocation[0][1]==j) ||(obstacleLocation[1][0]==i && obstacleLocation[1][1]==j)) {
+        //                 continue;
+        //             }
+        //             // 장애물 놓기
+        //             else {
+        //                 obstacleLocation[obstacleNum][0]=i;
+        //                 obstacleLocation[obstacleNum][1]=j;
+        //                 obstacleNum++;
+
+        //                 map[i][j] = "O";
+
+        //                 if(obstacleNum == 3) {
+        //                     if (isSafe())
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        // map 출력(확인용)
+        // for (int i = 1; i <= N; i++) {
+        //     for (int j = 1; j <= N; j++) {
+        //         bw.write(map[i][j] + " ");
+        //     }
+        //     bw.write("\n");
+        //     bw.flush();
+
+        // }
+
+        bw.write("NO");
+        bw.flush();
+        bw.close();
+        return;
+    }
+}

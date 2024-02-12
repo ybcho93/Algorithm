@@ -1,0 +1,110 @@
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class Main {  
+    static Long officerNum, friendNum;
+    static Long procedureTime[];
+    static Long friendDone= 0L;
+    // 최대 시간은 10^9명이 심사관 1명한테 명당 10^9시간씩 걸려서 심사받는 데에 필요한 시간.
+    // -> 10^18
+    static Long max = 1000000000000000000L;
+    static Long min = 0L;
+    static Long mid=0L;
+    
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    
+    static StringTokenizer st;     
+    
+    // 정해진 시간 안에 끝낼 수 있는지 확인하는 함수
+    public static boolean check(Long time) {
+        friendDone=0L;
+        for(int i=0; i<officerNum; i++) {
+            friendDone+= time/procedureTime[i];
+            if (friendDone >= friendNum ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public static void main(String[] args) throws IOException {        
+           
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");        
+        officerNum = Long.valueOf(Integer.parseInt(st.nextToken()));
+        friendNum = Long.valueOf(Integer.parseInt(st.nextToken()));
+
+        procedureTime = new Long[officerNum.intValue()];
+        for(int i=0; i<officerNum; i++) {
+            procedureTime[i]= Long.valueOf(Integer.parseInt(br.readLine()));
+        }
+
+        while(min+1<max) {
+            mid = (min+max)/2;
+            // bw.write(min+" "+max+" "+answer+"\n");
+            // bw.flush();
+            // true인건 끝낼 수 있다는 뜻 -> 시간이 충분하다는 뜻 -> max를 줄임
+            if(check(mid)) {
+                //bw.write("true\n");
+               // bw.flush();
+                max = mid;
+            }
+            // 시간이 부족 -> min을 올림
+            else {
+                //bw.write("false\n");
+                //bw.flush();
+                min = mid;
+            }
+        }
+        
+
+        bw.write(max+"\n");
+        bw.flush();
+        bw.close();
+        
+        return;
+    }
+}
+
+/*------------- 실패 코드 ----------------*/
+// import java.io.*;
+// import java.util.StringTokenizer;
+
+// public class Main {  
+
+//     public static void main(String[] args) throws IOException {        
+//         Long officerNum, friendNum;
+//         Long procedureTime[];
+//         Long friendDone= Long.valueOf(0);
+//         Long time= Long.valueOf(1);
+    
+//         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    
+//         StringTokenizer st = new StringTokenizer(br.readLine(), " ");        
+//         officerNum = Long.valueOf(Integer.parseInt(st.nextToken()));
+//         friendNum = Long.valueOf(Integer.parseInt(st.nextToken()));
+
+//         procedureTime = new Long[officerNum.intValue()];
+//         for(int i=0; i<officerNum; i++) {
+//             procedureTime[i]= Long.valueOf(Integer.parseInt(br.readLine()));
+//         }
+
+//         while(friendDone<friendNum) {
+//             for(int i=0; i<officerNum; i++) {
+//                 if(time % procedureTime[i] == 0 ) {
+//                     friendDone++;
+//                 }
+//             }
+//             time++;
+//         }
+//         time--;
+
+//         bw.write(time+"\n");
+//         bw.flush();
+//         bw.close();
+        
+//         return;
+//     }
+// }
